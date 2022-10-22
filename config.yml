@@ -1,0 +1,8 @@
+postgres:
+
+logger:
+  level: "debug"
+
+server:
+  port: "5001"
+  mode: "debug"
