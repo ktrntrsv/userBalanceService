@@ -23,4 +23,9 @@ func NewRouter(handler *gin.Engine, l logger.Interface) {
 		c.Status(http.StatusOK)
 	})
 
+	handler.PATCH("/account/:id/balance", enroll)
+	handler.GET("/account/:id/balance", getBalance)
+	handler.POST("/transaction/", startTransaction)
+	handler.PATCH("/transaction/:id/abort", abortTransaction)
+	handler.PATCH("/transaction/:id/approve", approveTransaction)
 }
