@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "ce075829-2451-426f-804a-f91008321641",
+		"name": "balance-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24018986"
+	},
+	"item": [
+		{
+			"name": "health-check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5001/healthz",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"healthz"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get balance",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5001/account/123e4567-e89b-12d3-a456-426614174001/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"123e4567-e89b-12d3-a456-426614174001",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "enroll",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 100\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5001/account/123e4567-e89b-12d3-a456-426614174001/balance",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"account",
+						"123e4567-e89b-12d3-a456-426614174001",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "start transaction",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "approve transaction",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5001/transaction/f4d90dd8-1db4-48df-a2b9-653a3da12e88/approve",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"transaction",
+						"f4d90dd8-1db4-48df-a2b9-653a3da12e88",
+						"approve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "abort transaction",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
