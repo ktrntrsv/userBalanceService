@@ -8,10 +8,15 @@ import (
 type Config struct {
 	Server   `yaml:"server"`
 	Postgres `yaml:"postgres"`
-	Logger   `yaml:"Logger"`
+	Logger   `yaml:"logger"`
 }
 
 type Postgres struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password" env:"POSTGRES_PWD"`
+	Database string `yaml:"database"`
 }
 
 type Server struct {

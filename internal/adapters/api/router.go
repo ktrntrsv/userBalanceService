@@ -8,7 +8,11 @@ import (
 	"net/http"
 )
 
-func NewRouter(handler *gin.Engine, l logger.Interface) {
+func NewRouter(
+	handler *gin.Engine,
+	accountUc accountUsecase,
+	l logger.Interface,
+) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -23,8 +27,9 @@ func NewRouter(handler *gin.Engine, l logger.Interface) {
 		c.Status(http.StatusOK)
 	})
 
-	handler.PATCH("/account/:id/balance", enroll)
-	handler.GET("/account/:id/balance", getBalance)
+	//Routes
+	newAccountHandlers(handler, accountUc, l)
+
 	handler.POST("/transaction/", startTransaction)
 	handler.PATCH("/transaction/:id/abort", abortTransaction)
 	handler.PATCH("/transaction/:id/approve", approveTransaction)
