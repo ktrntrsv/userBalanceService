@@ -2,10 +2,13 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/ktrntrsv/userBalanceService/internal/domain/models"
 )
+
+var ErrAccountNotFound = errors.New("account not found")
 
 type accountRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (models.Account, error)
@@ -43,5 +46,5 @@ func (a *AccountUsecase) GetBalance(ctx context.Context, accountId uuid.UUID) (f
 		return 0, err
 	}
 
-	return acc.GetBalance(), nil
+	return acc.Balance, nil
 }

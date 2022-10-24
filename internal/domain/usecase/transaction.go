@@ -2,14 +2,17 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/ktrntrsv/userBalanceService/internal/domain/models"
 )
 
+var ErrTransactionNotFound = errors.New("transaction not found")
+
 type transactionRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (models.Transaction, error)
-	UpdateStatus(ctx context.Context, id uuid.UUID) error
-	StartTransaction(ctx context.Context, dto models.TransactionStartDTO) (models.Transaction, error)
+	UpdateStatus(ctx context.Context, transaction models.Transaction) error
+	StartTransaction(ctx context.Context, dto models.TransactionStartDTO) (uuid.UUID, error)
 }
 
 type TransactionUsecase struct {
@@ -24,13 +27,11 @@ func NewTransactionUsecase(transactRepo transactionRepository, accRepo accountRe
 func (t *TransactionUsecase) StartTransaction(ctx context.Context, dto models.TransactionStartDTO) (uuid.UUID, error) {
 	sender, err := t.accountRepository.GetById(ctx, dto.AccountFromId)
 	if err != nil {
-		// todo обработать ошибку (сетевая проблема или пользователь не существует)
 		return uuid.UUID{}, err
 	}
 
 	_, err = t.accountRepository.GetById(ctx, dto.AccountToId)
 	if err != nil {
-		// todo обработать ошибку (сетевая проблема или пользователь не существует)
 		return uuid.UUID{}, err
 	}
 
@@ -38,7 +39,7 @@ func (t *TransactionUsecase) StartTransaction(ctx context.Context, dto models.Tr
 		return uuid.UUID{}, err
 	}
 
-	transaction, err := t.transactRepo.StartTransaction(ctx, dto)
+	id, err := t.transactRepo.StartTransaction(ctx, dto)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
@@ -48,7 +49,7 @@ func (t *TransactionUsecase) StartTransaction(ctx context.Context, dto models.Tr
 		return uuid.UUID{}, err
 	}
 
-	return transaction.Id, nil
+	return id, nil
 }
 
 func (t *TransactionUsecase) ApproveTransaction(ctx context.Context, transactID uuid.UUID) error {
@@ -58,7 +59,7 @@ func (t *TransactionUsecase) ApproveTransaction(ctx context.Context, transactID 
 	}
 
 	transact.Status = models.Approved
-	err = t.transactRepo.UpdateStatus(ctx, transactID)
+	err = t.transactRepo.UpdateStatus(ctx, transact)
 	if err != nil {
 		return err
 	}
@@ -89,7 +90,7 @@ func (t *TransactionUsecase) AbortTransaction(ctx context.Context, transactID uu
 	}
 
 	transact.Status = models.Abort
-	err = t.transactRepo.UpdateStatus(ctx, transactID)
+	err = t.transactRepo.UpdateStatus(ctx, transact)
 	if err != nil {
 		return err
 	}

@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/ktrntrsv/userBalanceService/internal/adapters/api"
+	"github.com/ktrntrsv/userBalanceService/internal/adapters/db"
 	"github.com/ktrntrsv/userBalanceService/internal/config"
+	"github.com/ktrntrsv/userBalanceService/internal/domain/usecase"
 	"github.com/ktrntrsv/userBalanceService/pkg/httpserver"
 	"github.com/ktrntrsv/userBalanceService/pkg/logger"
+	"github.com/ktrntrsv/userBalanceService/pkg/postgresql"
 	"log"
 	"os"
 	"os/signal"
@@ -22,10 +26,26 @@ func main() {
 
 	l := logger.New(cfg.Logger.Level)
 
+	postgresSQLClient, err := postgresql.NewClient(context.TODO(), 3, cfg.Postgres)
+	if err != nil {
+		l.Fatal(err)
+	}
+	l.Info("connected to postgreSQL 1")
+
+	accRepository := db.NewAccountRepository(postgresSQLClient, l)
+	transactionRepository := db.NewTransactionRepository(postgresSQLClient, l)
+
+	accUsecase := usecase.NewAccountUsecase(accRepository)
+	transUsecase := usecase.NewTransactionUsecase(transactionRepository, accRepository)
 	// HTTP Server
 	handler := gin.New()
 	gin.SetMode(cfg.Server.Mode)
-	api.NewRouter(handler, l)
+	api.NewRouter(
+		handler,
+		accUsecase,
+		transUsecase,
+		l)
+
 	httpServer := httpserver.New(handler, httpserver.Port(cfg.Server.Port))
 
 	// Waiting signal

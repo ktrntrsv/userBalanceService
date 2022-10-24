@@ -11,6 +11,7 @@ import (
 func NewRouter(
 	handler *gin.Engine,
 	accountUc accountUsecase,
+	transUsecase transactionUsecase,
 	l logger.Interface,
 ) {
 	// Options
@@ -29,8 +30,6 @@ func NewRouter(
 
 	//Routes
 	newAccountHandlers(handler, accountUc, l)
+	newTransactionHandlers(handler, transUsecase, l)
 
-	handler.POST("/transaction/", startTransaction)
-	handler.PATCH("/transaction/:id/abort", abortTransaction)
-	handler.PATCH("/transaction/:id/approve", approveTransaction)
 }

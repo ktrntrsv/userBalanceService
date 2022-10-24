@@ -1,4 +1,10 @@
 postgres:
+  host: "db"
+  port: "5432"
+  username: "user"
+  password: "pwd"
+  database: "balance"
+
 
 logger:
   level: "debug"
