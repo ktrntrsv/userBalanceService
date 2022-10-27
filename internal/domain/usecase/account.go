@@ -28,7 +28,6 @@ func (a *AccountUsecase) EnrollBalance(ctx context.Context, accountId uuid.UUID,
 	if err != nil {
 		return fmt.Errorf("can not find account %v: %w", accountId, err)
 	}
-
 	if err := acc.UpdateBalance(sum); err != nil {
 		return err
 	}

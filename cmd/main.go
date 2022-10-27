@@ -32,8 +32,9 @@ func main() {
 	}
 	l.Info("connected to postgreSQL 1")
 
-	accRepository := db.NewAccountRepository(postgresSQLClient, l)
-	transactionRepository := db.NewTransactionRepository(postgresSQLClient, l)
+	dbClient := db.Database{Pool: postgresSQLClient}
+	accRepository := db.NewAccountRepository(&dbClient, l)
+	transactionRepository := db.NewTransactionRepository(&dbClient, l)
 
 	accUsecase := usecase.NewAccountUsecase(accRepository)
 	transUsecase := usecase.NewTransactionUsecase(transactionRepository, accRepository)

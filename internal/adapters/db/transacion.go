@@ -4,21 +4,20 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/ktrntrsv/userBalanceService/internal/domain/models"
 	"github.com/ktrntrsv/userBalanceService/internal/domain/usecase"
 	"github.com/ktrntrsv/userBalanceService/pkg/logger"
 )
 
 type TransactionRepository struct {
-	client *pgxpool.Pool
+	*Database
 	logger logger.Interface
 }
 
-func NewTransactionRepository(client *pgxpool.Pool, logger logger.Interface) *TransactionRepository {
+func NewTransactionRepository(client *Database, logger logger.Interface) *TransactionRepository {
 	return &TransactionRepository{
-		client: client,
-		logger: logger,
+		Database: client,
+		logger:   logger,
 	}
 }
 
@@ -28,8 +27,7 @@ func (r *TransactionRepository) GetById(ctx context.Context, id uuid.UUID) (mode
 
 	var transaction models.Transaction
 
-	row := r.client.QueryRow(ctx, query, id)
-
+	row := r.model(ctx).QueryRow(ctx, query, id)
 	err := row.Scan(&transaction.Id, &transaction.Amount, &transaction.AccountToId, &transaction.AccountFromId, &transaction.Status, &transaction.ServiceId)
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -43,7 +41,7 @@ func (r *TransactionRepository) GetById(ctx context.Context, id uuid.UUID) (mode
 
 func (r *TransactionRepository) UpdateStatus(ctx context.Context, transaction models.Transaction) error {
 	query := `UPDATE transaction SET status=$1 WHERE id=$2;`
-	_, err := r.client.Exec(ctx, query, transaction.Status, transaction.Id)
+	_, err := r.model(ctx).Exec(ctx, query, transaction.Status, transaction.Id)
 	if err != nil {
 		return err
 	}
@@ -54,7 +52,7 @@ func (r *TransactionRepository) StartTransaction(ctx context.Context, dto models
 	id := uuid.New()
 	query := `INSERT INTO transaction (id, amount, account_to_id, account_from_id, status, service_id)
 			  VALUES ($1, $2, $3, $4, $5, $6)`
-	_, err := r.client.Exec(ctx, query, id, dto.Amount, dto.AccountToId, dto.AccountFromId, models.Pending, dto.ServiceId)
+	_, err := r.model(ctx).Exec(ctx, query, id, dto.Amount, dto.AccountToId, dto.AccountFromId, models.Pending, dto.ServiceId)
 	if err != nil {
 		return uuid.UUID{}, err
 	}

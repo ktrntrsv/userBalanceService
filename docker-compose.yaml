@@ -12,9 +12,11 @@ services:
   db:
     image: postgres
     restart: always
+    volumes:
+      - ./migrations/setup.sql:/docker-entrypoint-initdb.d/setup.sql
     ports:
       - "5431:5432"
     environment:
-      POSTGRES_DB: balance
-      POSTGRES_USER: user
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pwd

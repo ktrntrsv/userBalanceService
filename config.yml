@@ -1,9 +1,9 @@
 postgres:
   host: "db"
   port: "5432"
-  username: "user"
+  username: "postgres"
   password: "pwd"
-  database: "balance"
+  database: "postgres"
 
 
 logger:
